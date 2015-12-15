@@ -15,29 +15,29 @@
     </style>
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
     <script>
-    var Asteroid = function(x,y,velX,velY,size){
-          this.x = x;
-          this.y = y;
-          this.velX = velX;
-          this.velY = velY;
-          this.size = size;
-    };
-    Asteroid.prototype.updateCoord = function(xmax, xmin, ymax, ymin){
-      this.x = this.x + this.velX;
-      this.y = this.y + this.velY;
-      if(this.x > xmax || this.x < xmin ||
-         this.y > ymax || this.y < ymin){
-           return false;
+      var Asteroid = function(x,y,velX,velY,size){
+            this.x = x;
+            this.y = y;
+            this.velX = velX;
+            this.velY = velY;
+            this.size = size;
+      };
+      Asteroid.prototype.updateCoord = function(xmax, xmin, ymax, ymin){
+        this.x = this.x + this.velX;
+        this.y = this.y + this.velY;
+        if(this.x > xmax || this.x < xmin ||
+           this.y > ymax || this.y < ymin){
+             return false;
+        }
+        return true;
       }
-      return true;
-    }
-    Asteroid.prototype.returnCoord = function(){
-      return [this.x,this.y];
-    }
+      Asteroid.prototype.returnCoord = function(){
+        return [this.x,this.y];
+      }
 
-    var asteroids = [];
+      var asteroids = [];
 
-    var frames = 0;
+      var frames = 0;
 
       $(document).ready(function(){
       	//Canvas stuff
@@ -243,9 +243,6 @@
       		ctx.strokeStyle = "black";
       		ctx.strokeRect(0, h/2, w/2, h/2);
 
-          $(document).mousemove(function(e){
-            if((e.pageX > 0) && (e.pageX < w/2) && (e.pageY > h/2) && (e.pageY < h)){
-              $("#image").css({left:e.pageX, top:e.pageY});
           if(frames % 20 == 0){
             makeNewAsteroid();
           }
@@ -255,6 +252,12 @@
           		ctx.fillRect(a.x, a.y, a.size, a.size);
           		ctx.strokeStyle = "white";
           		ctx.strokeRect(a.x, a.y, a.size, a.size);
+            }
+          });
+
+          $(document).mousemove(function(e){
+            if((e.pageX > 0) && (e.pageX < w/2) && (e.pageY > h/2) && (e.pageY < h)){
+              $("#image").css({left:e.pageX, top:e.pageY});
             }
           });
         }
