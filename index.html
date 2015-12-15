@@ -15,6 +15,30 @@
     </style>
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
     <script>
+    var Asteroid = function(x,y,velX,velY,size){
+          this.x = x;
+          this.y = y;
+          this.velX = velX;
+          this.velY = velY;
+          this.size = size;
+    };
+    Asteroid.prototype.updateCoord = function(xmax, xmin, ymax, ymin){
+      this.x = this.x + this.velX;
+      this.y = this.y + this.velY;
+      if(this.x > xmax || this.x < xmin ||
+         this.y > ymax || this.y < ymin){
+           return false;
+      }
+      return true;
+    }
+    Asteroid.prototype.returnCoord = function(){
+      return [this.x,this.y];
+    }
+
+    var asteroids = [];
+
+    var frames = 0;
+
       $(document).ready(function(){
       	//Canvas stuff
       	var canvas = $("#canvas")[0];
@@ -55,6 +79,7 @@
 
       	function paint()
       	{
+          frames++;
       		snakePaint();
           rhythmPaint();
           asteroidPaint();
@@ -172,21 +197,67 @@
       		ctx.strokeRect(w/2, 0, w/2, h/2);
         }
 
+        var asteroidX_min = 0;
+        var asteroidX_max = w/2;
+        var asteroidY_min = h/2;
+        var asteroidY_max = h;
+
         function asteroidInit(){
 
         }
 
+        function makeNewAsteroid(){
+          var spawnLocation = Math.floor(Math.random() * 3); // random number 0 - 3
+          var random_x;
+          var random_y;
+          var new_asteroid;
+          switch(spawnLocation){
+            case 0: // top
+              random_x = Math.floor(Math.random() * asteroidX_max);
+              new_asteroid = new Asteroid(random_x, asteroidY_min,1,1,15);
+              asteroids.push(new_asteroid);
+              break;
+            case 1: // left
+              random_y = Math.floor((Math.random() * asteroidY_max) + asteroidY_min);
+              new_asteroid = new Asteroid(asteroidX_min, random_y,1,-1,15);
+              asteroids.push(new_asteroid);
+              break;
+            case 2: // bottom
+              random_x = Math.floor(Math.random() * asteroidX_max);
+              new_asteroid = new Asteroid(random_x, asteroidY_max,-1,-1,15);
+              asteroids.push(new_asteroid);
+              break;
+            case 3: // right
+              random_y = Math.floor((Math.random() * asteroidY_max) + asteroidY_min);
+              new_asteroid = new Asteroid(asteroidX_max, random_y,-1,-1,15);
+              asteroids.push(new_asteroid);
+              break;
+            }
+
+        }
+
         function asteroidPaint(){
-          //To avoid the snake trail we need to paint the BG on every frame
-      		//Lets paint the canvas now
+          // Paint bg evertime to cover trail
       		ctx.fillStyle = "white";
       		ctx.fillRect(0, h/2, w/2, h/2);
       		ctx.strokeStyle = "black";
       		ctx.strokeRect(0, h/2, w/2, h/2);
 
+<<<<<<< HEAD
           $(document).mousemove(function(e){
             if((e.pageX > 0) && (e.pageX < w/2) && (e.pageY > h/2) && (e.pageY < h)){
               $("#image").css({left:e.pageX, top:e.pageY});
+=======
+          if(frames % 20 == 0){
+            makeNewAsteroid();
+          }
+          asteroids.forEach(function(a){
+            if(a.updateCoord(asteroidX_max, asteroidX_min, asteroidY_max, asteroidY_min)){
+              ctx.fillStyle = "blue";
+          		ctx.fillRect(a.x, a.y, a.size, a.size);
+          		ctx.strokeStyle = "white";
+          		ctx.strokeRect(a.x, a.y, a.size, a.size);
+>>>>>>> asteroidsBranch
             }
           });
         }
