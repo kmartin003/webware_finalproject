@@ -11,25 +11,27 @@
       	//Canvas stuff
       	var canvas = $("#canvas")[0];
       	var ctx = canvas.getContext("2d");
-      	var w = $("#canvas").width() / 2;
-      	var h = $("#canvas").height() / 2;
+      	var w = $("#canvas").width();
+      	var h = $("#canvas").height();
 
+        //snake variables
       	//Lets save the cell width in a variable for easy control
       	var cw = 10;
       	var d;
       	var food;
       	var score;
+        var snakeW = w/2;
+        var snakeH = h/2;
 
       	//Lets create the snake now
       	var snake_array; //an array of cells to make up the snake
 
       	function init()
       	{
-      		d = "right"; //default direction
-      		create_snake();
-      		create_food(); //Now we can see the food particle
-      		//finally lets display the score
-      		score = 0;
+          snakeInit();
+          rhythmInit();
+          asteroidInit();
+          flappyInit();
 
       		//Lets move the snake now using a timer which will trigger the paint function
       		//every 60ms
@@ -38,37 +40,30 @@
       	}
       	init();
 
-      	function create_snake()
-      	{
-      		var length = 5; //Length of the snake
-      		snake_array = []; //Empty array to start with
-      		for(var i = length-1; i>=0; i--)
-      		{
-      			//This will create a horizontal snake starting from the top left
-      			snake_array.push({x: i, y:0});
-      		}
-      	}
-
-      	//Lets create the food now
-      	function create_food()
-      	{
-      		food = {
-      			x: Math.round(Math.random()*(w-cw)/cw),
-      			y: Math.round(Math.random()*(h-cw)/cw),
-      		};
-      		//This will create a cell with x/y between 0-44
-      		//Because there are 45(450/10) positions accross the rows and columns
-      	}
-
       	//Lets paint the snake now
       	function paint()
       	{
-      		//To avoid the snake trail we need to paint the BG on every frame
+      		snakePaint();
+          rhythmPaint();
+          asteroidPaint();
+          flappyPaint();
+      	}
+
+        function snakeInit(){
+          d = "right"; //default direction
+      		create_snake();
+      		create_food(); //Now we can see the food particle
+      		//finally lets display the score
+      		score = 0;
+        }
+
+        function snakePaint(){
+          //To avoid the snake trail we need to paint the BG on every frame
       		//Lets paint the canvas now
       		ctx.fillStyle = "white";
-      		ctx.fillRect(0, 0, w, h);
+      		ctx.fillRect(0, 0, w/2, h/2);
       		ctx.strokeStyle = "black";
-      		ctx.strokeRect(0, 0, w, h);
+      		ctx.strokeRect(0, 0, w/2, h/2);
 
       		//The movement code for the snake to come here.
       		//The logic is simple
@@ -87,7 +82,7 @@
       		//This will restart the game if the snake hits the wall
       		//Lets add the code for body collision
       		//Now if the head of the snake bumps into its body, the game will restart
-      		if(nx == -1 || nx == w/cw || ny == -1 || ny == h/cw || check_collision(nx, ny, snake_array))
+      		if(nx == -1 || nx == snakeW/cw || ny == -1 || ny == snakeH/cw || check_collision(nx, ny, snake_array))
       		{
       			//restart game
       			init();
@@ -126,8 +121,69 @@
       		paint_cell(food.x, food.y);
       		//Lets paint the score
       		var score_text = "Score: " + score;
-      		ctx.fillText(score_text, 5, h-5);
+      		ctx.fillText(score_text, 5, snakeH-5);
+        }
+
+        function create_snake()
+      	{
+      		var length = 5; //Length of the snake
+      		snake_array = []; //Empty array to start with
+      		for(var i = length-1; i>=0; i--)
+      		{
+      			//This will create a horizontal snake starting from the top left
+      			snake_array.push({x: i, y:0});
+      		}
       	}
+
+      	//Lets create the food now
+      	function create_food()
+      	{
+      		food = {
+      			x: Math.round(Math.random()*(snakeW-cw)/cw),
+      			y: Math.round(Math.random()*(snakeH-cw)/cw),
+      		};
+      		//This will create a cell with x/y between 0-44
+      		//Because there are 45(450/10) positions accross the rows and columns
+      	}
+
+        function rhythmInit(){
+
+        }
+
+        function rhythmPaint(){
+          //To avoid the snake trail we need to paint the BG on every frame
+      		//Lets paint the canvas now
+      		ctx.fillStyle = "white";
+      		ctx.fillRect(w/2, 0, w/2, h/2);
+      		ctx.strokeStyle = "black";
+      		ctx.strokeRect(w/2, 0, w/2, h/2);
+        }
+
+        function asteroidInit(){
+
+        }
+
+        function asteroidPaint(){
+          //To avoid the snake trail we need to paint the BG on every frame
+      		//Lets paint the canvas now
+      		ctx.fillStyle = "white";
+      		ctx.fillRect(0, h/2, w/2, h/2);
+      		ctx.strokeStyle = "black";
+      		ctx.strokeRect(0, h/2, w/2, h/2);
+        }
+
+        function flappyInit(){
+
+        }
+
+        function flappyPaint(){
+          //To avoid the snake trail we need to paint the BG on every frame
+      		//Lets paint the canvas now
+      		ctx.fillStyle = "white";
+      		ctx.fillRect(w/2, h/2, w/2, h/2);
+      		ctx.strokeStyle = "black";
+      		ctx.strokeRect(w/2, h/2, w/2, h/2);
+        }
 
       	//Lets first create a generic function to paint cells
       	function paint_cell(x, y)
