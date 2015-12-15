@@ -22,9 +22,6 @@
       	var h = $("#canvas").height();
 
         var ctx = canvas.getContext("2d");
-        //var rhythmctx = canvas.getContext("2d");
-        //var asteroidctx = canvas.getContext("2d");
-        //var flappyctx = canvas.getContext("2d");
 
         //snake variables
       	//Lets save the cell width in a variable for easy control
@@ -34,9 +31,13 @@
       	var score;
         var snakeW = w/2;
         var snakeH = h/2;
-
       	//Lets create the snake now
       	var snake_array; //an array of cells to make up the snake
+
+        //asteroid variables
+        document.getElementById("image").style.left = w/4 +"px";
+        document.getElementById("image").style.top = 3*h/4 +"px";
+
 
       	function init()
       	{
@@ -184,7 +185,9 @@
       		ctx.strokeRect(0, h/2, w/2, h/2);
 
           $(document).mousemove(function(e){
-            $("#image").css({left:e.pageX, top:e.pageY});
+            if((e.pageX > 0) && (e.pageX < w/2) && (e.pageY > h/2) && (e.pageY < h)){
+              $("#image").css({left:e.pageX, top:e.pageY});
+            }
           });
         }
 
@@ -231,8 +234,8 @@
       		else if(key == "68" && d != "left") d = "right";
       		else if(key == "83" && d != "up") d = "down";
       		//The snake is now keyboard controllable
-      	})
-      })
+      	});
+      });
     </script>
   </body>
 </html>
