@@ -7,6 +7,23 @@
 
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
     <script>
+    var Asteroid = function(x,y,velX,velY,size){
+          this.x = x;
+          this.y = y;
+          this.velX = velX;
+          this.velY = velY;
+          this.size = size;
+    };
+    Asteroid.prototype.updateCoord = function(){
+      this.x = this.x + this.velX;
+      this.y = this.y + this.velY;
+    }
+    Asteroid.prototype.returnCoord = function(){
+      return [this.x,this.y];
+    }
+
+    var asteroids = [];
+
       $(document).ready(function(){
       	//Canvas stuff
       	var canvas = $("#canvas")[0];
@@ -160,7 +177,8 @@
         }
 
         function asteroidInit(){
-
+          var ast = new Asteroid(0,h/2,1,1,15);
+          asteroids.push(ast);
         }
 
         function asteroidPaint(){
@@ -170,6 +188,14 @@
       		ctx.fillRect(0, h/2, w/2, h/2);
       		ctx.strokeStyle = "black";
       		ctx.strokeRect(0, h/2, w/2, h/2);
+
+          asteroids.forEach(function(a){
+            ctx.fillStyle = "blue";
+        		ctx.fillRect(a.x, a.y, a.size, a.size);
+        		ctx.strokeStyle = "white";
+        		ctx.strokeRect(a.x, a.y, a.size, a.size);
+            a.updateCoord();
+          });
         }
 
         function flappyInit(){
