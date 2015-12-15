@@ -243,11 +243,11 @@
       		ctx.strokeStyle = "black";
       		ctx.strokeRect(0, h/2, w/2, h/2);
 
-<<<<<<< HEAD
           $(document).mousemove(function(e){
             if((e.pageX > 0) && (e.pageX < w/2) && (e.pageY > h/2) && (e.pageY < h)){
               $("#image").css({left:e.pageX, top:e.pageY});
-=======
+            }
+          });
           if(frames % 20 == 0){
             makeNewAsteroid();
           }
@@ -257,7 +257,6 @@
           		ctx.fillRect(a.x, a.y, a.size, a.size);
           		ctx.strokeStyle = "white";
           		ctx.strokeRect(a.x, a.y, a.size, a.size);
->>>>>>> asteroidsBranch
             }
           });
         }
