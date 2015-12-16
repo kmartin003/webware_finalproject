@@ -157,7 +157,6 @@
       		if(typeof game_loop != "undefined") clearInterval(game_loop);
       		game_loop = setInterval(paint, 80);
       	}
-      	//init();
 
       	function paint()
       	{
@@ -292,13 +291,14 @@
             ctx.fillText(words, w/2+55, h/2-100)
           }
           if(countdown == -5)
-            init();
+            menu();
 
           $(document).mousedown(function(e){
             if(countdown >= 0){
               countdown = 0;
             }else{
-              init();
+              menu();
+              return;
             }
           });
 
@@ -442,7 +442,7 @@
                 (bird.y > p.y + p.height)  ||
                 (15 + bird.y < p.y)){}
             else{
-              init();
+              menu();
               return;
             }
 
@@ -458,7 +458,8 @@
           paintBird(bird);
           if(bird.update()){}
           else{
-            init();
+            menu();
+            return;
           }
 
           bird.fall(1);
