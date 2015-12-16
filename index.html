@@ -23,30 +23,80 @@
     </style>
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
     <script>
-    var Asteroid = function(x,y,velX,velY,size){
-          this.x = x;
-          this.y = y;
-          this.velX = velX;
-          this.velY = velY;
-          this.size = size;
-    };
-    Asteroid.prototype.updateCoord = function(xmax, xmin, ymax, ymin){
-      this.x = this.x + this.velX;
-      this.y = this.y + this.velY;
-      if(this.x > xmax || this.x < xmin ||
-         this.y > ymax || this.y < ymin){
-           return false;
+      //
+      // flappy classes
+      var Bird = function(x,y,velY){
+        this.x = x;
+        this.y = y;
+        this.velY = velY;
       }
-      return true;
-    }
-    Asteroid.prototype.returnCoord = function(){
-      return [this.x,this.y];
-    }
+      Bird.prototype.update = function(){
+          if(this.y > 500 || this.y < 250){
+            return false;
+          }else{
+            this.y = this.y + this.velY;
+            return true;
+          }
+      }
+      Bird.prototype.flop = function(amount){
+        this.velY -= amount;
+      }
+      Bird.prototype.fall = function(amount){
+        this.velY += amount;
+      }
+      Bird.prototype.setAttr = function(x,y,vel){
+        this.x = x;
+        this.y = y;
+        this.velY = vel;
+      }
 
-    var asteroids = [];
+      var Pipe = function(x,y,height){
+        this.x = x;
+        this.y = y;
+        this.height = height;
+      }
+      Pipe.prototype.update = function(){
+        if(this.x < 250){
+          return false;
+        }else{
+          this.x = this.x - 2;
+          return true;
+        }
 
-    var frames = 0;
+      }
 
+      //
+      // asteroid classes
+      var Asteroid = function(x,y,velX,velY,size){
+            this.x = x;
+            this.y = y;
+            this.velX = velX;
+            this.velY = velY;
+            this.size = size;
+      };
+      Asteroid.prototype.updateCoord = function(xmax, xmin, ymax, ymin){
+        this.x = this.x + this.velX;
+        this.y = this.y + this.velY;
+        if(this.x > xmax || this.x < xmin ||
+           this.y > ymax || this.y < ymin){
+             return false;
+        }
+        return true;
+      }
+      Asteroid.prototype.returnCoord = function(){
+        return [this.x,this.y];
+      }
+
+      // array of asteroids (TODO: move inside document.ready?)
+      var asteroids = [];
+      // our bird and pipes
+      var bird = new Bird(163, 275 , 3);
+      var pipes = [];
+      // how long we've been running
+      var frames = 0;
+
+      //
+      // begin game
       $(document).ready(function(){
       	//Canvas stuff
       	var canvas = $("#canvas")[0];
@@ -105,7 +155,7 @@
       		//Lets move the snake now using a timer which will trigger the paint function
       		//every 60ms
       		if(typeof game_loop != "undefined") clearInterval(game_loop);
-      		game_loop = setInterval(paint, 60);
+      		game_loop = setInterval(paint, 80);
       	}
       	//init();
 
@@ -190,8 +240,8 @@
       		//Lets paint the food
       		paint_cell(food.x, food.y);
       		//Lets paint the score
-      		var score_text = "Score: " + score;
-      		ctx.fillText(score_text, 5, snakeH-5);
+      		//var score_text = "Score: " + score;
+      		//ctx.fillText(score_text, 5, snakeH-5);
         }
 
         function create_snake()
@@ -215,9 +265,10 @@
       		//This will create a cell with x/y between 0-44
       		//Because there are 45(450/10) positions accross the rows and columns
       	}
+        var countdown = 0;
 
         function rhythmInit(){
-
+          countdown = 0;
         }
 
         function rhythmPaint(){
@@ -227,6 +278,30 @@
       		ctx.fillRect(w/2, 0, w/2, h/2);
       		ctx.strokeStyle = "black";
       		ctx.strokeRect(w/2, 0, w/2, h/2);
+
+          if(frames % 100 == 0){
+            countdown = 50;
+            counting = true;
+          }
+          var words;
+          if(countdown <= 100 && countdown >= 0){
+            countdown--;
+            ctx.fillStyle = "red";
+            ctx.font="140px Georgia";
+            words = countdown.toString();
+            ctx.fillText(words, w/2+55, h/2-100)
+          }
+          if(countdown == -5)
+            init();
+
+          $(document).mousedown(function(e){
+            if(countdown >= 0){
+              countdown = 0;
+            }else{
+              init();
+            }
+          });
+
         }
 
         var asteroidX_min = 0;
@@ -272,7 +347,6 @@
               asteroids.push(new_asteroid);
               break;
             }
-
         }
 
         function asteroidPaint(){
@@ -314,18 +388,83 @@
           });
         }
 
+        var flopping = 0;
+        var ontop = true;
         function flappyInit(){
+          pipes.forEach(function(a){
+            pipes.pop(a);
+          });
+          bird.setAttr(w/2+13, h - h/4, 3)
+          // draw background, no trails
+          ctx.fillStyle = "white";
+          ctx.fillRect(w/2, h/2, w/2, h/2);
+          ctx.strokeStyle = "black";
+          ctx.strokeRect(w/2, h/2, w/2, h/2);
+          bird
+        }
 
+        function makeNewPipe(){
+          var height = Math.floor((Math.random() * 70) + 100);
+          var new_pipe;
+          if(ontop){
+              ontop = false;
+              new_pipe = new Pipe(w,h/2, height);
+              pipes.push(new_pipe);
+          }else{
+              ontop = true;
+              new_pipe = new Pipe(w,h-height, height);
+              pipes.push(new_pipe);
+          }
+        }
+
+        function paintBird(bird){
+          ctx.fillStyle = "red";
+      		ctx.fillRect(bird.x, bird.y, 15, 15);
+      		ctx.strokeStyle = "red";
+      		ctx.strokeRect(bird.x, bird.y, 15, 15);
         }
 
         function flappyPaint(){
-          //To avoid the snake trail we need to paint the BG on every frame
-      		//Lets paint the canvas now
-      		ctx.fillStyle = "white";
+          // draw background, no trails
+      	   ctx.fillStyle = "white";
       		ctx.fillRect(w/2, h/2, w/2, h/2);
       		ctx.strokeStyle = "black";
       		ctx.strokeRect(w/2, h/2, w/2, h/2);
+
+          if(frames % 100 == 0) {
+            makeNewPipe();
+          }
+
+          pipes.forEach(function(p){
+            //collision
+            if((bird.x > p.x + 10)  ||
+                (bird.x + 15 < p.x) ||
+                (bird.y > p.y + p.height)  ||
+                (15 + bird.y < p.y)){}
+            else{
+              init();
+              return;
+            }
+
+            if(p.update()){
+              ctx.fillStyle = "blue";
+          		ctx.fillRect(p.x, p.y, 10, p.height);
+          		ctx.strokeStyle = "blue";
+          		ctx.strokeRect(p.x, p.y, 10, p.height);
+            }
+          });
+
+          // want to paint our "bird"
+          paintBird(bird);
+          if(bird.update()){}
+          else{
+            init();
+          }
+
+          bird.fall(1);
         }
+
+
 
       	//Lets first create a generic function to paint cells
       	function paint_cell(x, y)
@@ -356,6 +495,9 @@
       		else if(key == "87" && d != "down") d = "up";
       		else if(key == "68" && d != "left") d = "right";
       		else if(key == "83" && d != "up") d = "down";
+          else if((key == "32") || key == "67"){
+            bird.flop(8);
+          }
       		//The snake is now keyboard controllable
       	});
       });
