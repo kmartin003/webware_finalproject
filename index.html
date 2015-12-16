@@ -124,7 +124,7 @@
       		//Lets move the snake now using a timer which will trigger the paint function
       		//every 60ms
       		if(typeof game_loop != "undefined") clearInterval(game_loop);
-      		game_loop = setInterval(paint, 60);
+      		game_loop = setInterval(paint, 80);
       	}
       	init();
 
@@ -209,8 +209,8 @@
       		//Lets paint the food
       		paint_cell(food.x, food.y);
       		//Lets paint the score
-      		var score_text = "Score: " + score;
-      		ctx.fillText(score_text, 5, snakeH-5);
+      		//var score_text = "Score: " + score;
+      		//ctx.fillText(score_text, 5, snakeH-5);
         }
 
         function create_snake()
@@ -234,9 +234,10 @@
       		//This will create a cell with x/y between 0-44
       		//Because there are 45(450/10) positions accross the rows and columns
       	}
+        var countdown = 0;
 
         function rhythmInit(){
-
+          countdown = 0;
         }
 
         function rhythmPaint(){
@@ -246,6 +247,30 @@
       		ctx.fillRect(w/2, 0, w/2, h/2);
       		ctx.strokeStyle = "black";
       		ctx.strokeRect(w/2, 0, w/2, h/2);
+
+          if(frames % 100 == 0){
+            countdown = 50;
+            counting = true;
+          }
+          var words;
+          if(countdown <= 100 && countdown >= 0){
+            countdown--;
+            ctx.fillStyle = "red";
+            ctx.font="140px Georgia";
+            words = countdown.toString();
+            ctx.fillText(words, w/2+55, h/2-100)
+          }
+          if(countdown == -5)
+            init();
+
+          $(document).mousedown(function(e){
+            if(countdown >= 0){
+              countdown = 0;
+            }else{
+              init();
+            }
+          });
+
         }
 
         var asteroidX_min = 0;
