@@ -91,8 +91,9 @@
       	var snake_array; //an array of cells to make up the snake
 
         //asteroid variables
-        document.getElementById("image").style.left = w/4 +"px";
-        document.getElementById("image").style.top = 3*h/4 +"px";
+        var astPlayer = document.getElementById("image");
+        astPlayer.style.left = w/4 +"px";
+        astPlayer.style.top = 3*h/4 +"px";
 
 
       	function init()
@@ -235,7 +236,12 @@
         var asteroidY_max = h;
 
         function asteroidInit(){
+          asteroids.forEach(function(a){
+            asteroids.pop(a);
+          });
 
+          astPlayer.style.left = w/4 +"px";
+          astPlayer.style.top = 3*h/4 +"px";
         }
 
         function makeNewAsteroid(){
@@ -274,21 +280,34 @@
       		ctx.strokeStyle = "black";
       		ctx.strokeRect(0, h/2, w/2, h/2);
 
+          $(document).mousemove(function(e){
+            if((e.pageX > 0) && (e.pageX < w/2) && (e.pageY > h/2) && (e.pageY < h)){
+              $("#image").css({left:e.pageX, top:e.pageY});
+            }
+          });
           if(frames % 20 == 0){
             makeNewAsteroid();
           }
           asteroids.forEach(function(a){
+            var left = parseInt(astPlayer.style.left, 10);
+            var top = parseInt(astPlayer.style.top, 10);
+            var width = 20;
+            var height = 20;
+
+            //collision
+            if(((left + width < a.x) || (a.x + a.size < left) || (top + height < a.y) || (a.y+a.size < top))){
+
+            }
+            else{
+              init();
+              return;
+            }
+
             if(a.updateCoord(asteroidX_max, asteroidX_min, asteroidY_max, asteroidY_min)){
               ctx.fillStyle = "blue";
           		ctx.fillRect(a.x, a.y, a.size, a.size);
           		ctx.strokeStyle = "white";
           		ctx.strokeRect(a.x, a.y, a.size, a.size);
-            }
-          });
-
-          $(document).mousemove(function(e){
-            if((e.pageX > 0) && (e.pageX < w/2) && (e.pageY > h/2) && (e.pageY < h)){
-              $("#image").css({left:e.pageX, top:e.pageY});
             }
           });
         }
