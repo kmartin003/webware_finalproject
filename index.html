@@ -143,14 +143,10 @@
         }
         menu();
 
-      	function init()
-      	{
-<<<<<<< HEAD
+      	function init(){
           frames = 1;
           // initialize all the games
-=======
           ctx.clearRect(0,0,w,h);
->>>>>>> refs/remotes/origin/master
           snakeInit();
           rhythmInit();
           asteroidInit();
@@ -201,12 +197,7 @@
       		if(nx == -1 || nx == snakeW/cw || ny == -1 || ny == snakeH/cw ||
              check_collision(nx, ny, snake_array)){
       			//restart game
-<<<<<<< HEAD
-      			init();
-=======
       			menu();
-      			//Lets organize the code a bit now.
->>>>>>> refs/remotes/origin/master
       			return;
       		}
       		// if overlaps with food
@@ -276,11 +267,10 @@
         $(document).mousedown(function(e){
           console.log('help2:' +countdown);
           if(countdown == -1){
-            init();
+            menu();
             return;
           }else if(countdown > 0){
             countdown = -1;
-            return;
           }
         });
 
@@ -308,26 +298,12 @@
             words = countdown.toString();
             ctx.fillText(words, w/2+55, h/2-100)
           }
-<<<<<<< HEAD
           // Game over if the time is up
           if(countdown == 0){
-            init();
+            menu();
             return;
           }
-=======
-          if(countdown == -5)
-            menu();
 
-          $(document).mousedown(function(e){
-            if(countdown >= 0){
-              countdown = 0;
-            }else{
-              menu();
-              return;
-            }
-          });
-
->>>>>>> refs/remotes/origin/master
         }
 
         //
@@ -345,13 +321,9 @@
           asteroids.forEach(function(a){
             asteroids.pop(a);
           });
-<<<<<<< HEAD
+
           // Set location of player
-=======
-
           astPlayer.style.display = "inline";
-
->>>>>>> refs/remotes/origin/master
           astPlayer.style.left = w/4 +"px";
           astPlayer.style.top = 3*h/4 +"px";
         }
@@ -413,16 +385,9 @@
             var width = 20;
             var height = 20;
             //collision
-            if(((left + width < a.x) || (a.x + a.size < left) || (top + height < a.y) || (a.y+a.size < top))){
-
-            }
-<<<<<<< HEAD
-            else{ // no collison
-              init();
-=======
+            if(((left + width < a.x) || (a.x + a.size < left) || (top + height < a.y) || (a.y+a.size < top))){}
             else{
               menu();
->>>>>>> refs/remotes/origin/master
               return;
             }
 
