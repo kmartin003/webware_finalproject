@@ -23,13 +23,23 @@
         this.velY = velY;
       }
       Bird.prototype.update = function(){
-          this.y = this.y + this.velY;
+          if(this.y > 500 || this.y < 250){
+            return false;
+          }else{
+            this.y = this.y + this.velY;
+            return true;
+          }
       }
       Bird.prototype.flop = function(amount){
         this.velY -= amount;
       }
       Bird.prototype.fall = function(amount){
         this.velY += amount;
+      }
+      Bird.prototype.setAttr = function(x,y,vel){
+        this.x = x;
+        this.y = y;
+        this.velY = vel;
       }
 
       var Pipe = function(x,y,height){
@@ -38,8 +48,13 @@
         this.height = height;
       }
       Pipe.prototype.update = function(){
-        this.x--;
-        return true;
+        if(this.x < 250){
+          return false;
+        }else{
+          this.x = this.x - 2;
+          return true;
+        }
+
       }
 
       //
@@ -66,6 +81,9 @@
 
       // array of asteroids (TODO: move inside document.ready?)
       var asteroids = [];
+      // our bird and pipes
+      var bird = new Bird(163, 275 , 3);
+      var pipes = [];
       // how long we've been running
       var frames = 0;
 
@@ -312,12 +330,19 @@
           });
         }
 
-        var bird = new Bird(w/2 + 3, h - h/4 , 3);
         var flopping = 0;
-        var pipes = [];
         var ontop = true;
         function flappyInit(){
-
+          pipes.forEach(function(a){
+            pipes.pop(a);
+          });
+          bird.setAttr(w/2+13, h - h/4, 3)
+          // draw background, no trails
+          ctx.fillStyle = "white";
+          ctx.fillRect(w/2, h/2, w/2, h/2);
+          ctx.strokeStyle = "black";
+          ctx.strokeRect(w/2, h/2, w/2, h/2);
+          bird
         }
 
         function makeNewPipe(){
@@ -353,6 +378,16 @@
           }
 
           pipes.forEach(function(p){
+            //collision
+            if((bird.x > p.x + 10)  ||
+                (bird.x + 15 < p.x) ||
+                (bird.y > p.y + p.height)  ||
+                (15 + bird.y < p.y)){}
+            else{
+              init();
+              return;
+            }
+
             if(p.update()){
               ctx.fillStyle = "blue";
           		ctx.fillRect(p.x, p.y, 10, p.height);
@@ -363,7 +398,11 @@
 
           // want to paint our "bird"
           paintBird(bird);
-          bird.update();
+          if(bird.update()){}
+          else{
+            init();
+          }
+
           bird.fall(1);
         }
 
