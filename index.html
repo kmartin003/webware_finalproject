@@ -4,7 +4,7 @@
   </head>
   <body>
     <canvas id="canvas" width="500" height="500"></canvas>
-    <img id="image" src="http://www.clipartlord.com/wp-content/uploads/2015/07/rocketship19.png"/>
+    <img id="image" src="astPlayer.png"/>
     <img id="startButton" src="start.png"/>
     <style>
       #image{
@@ -40,9 +40,11 @@
       }
       Bird.prototype.flop = function(amount){
         this.velY -= amount;
+        if(this.velY < 7) this.velY = -7;
       }
       Bird.prototype.fall = function(amount){
         this.velY += amount;
+        if(this.velY > 7) this.velY = 7;
       }
       Bird.prototype.setAttr = function(x,y,vel){
         this.x = x;
@@ -124,7 +126,6 @@
         function menu(){
           clearInterval(game_loop);
           ctx.clearRect(-1,-1,w+1,h+1);
-          console.log('should clear');
 
           ctx.fillStyle = "white";
       		ctx.fillRect(0, 0, w, h);
@@ -358,7 +359,7 @@
 
           $(document).mousemove(function(e){
             if((e.pageX > 0) && (e.pageX < w/2) && (e.pageY > h/2) && (e.pageY < h)){
-              $("#image").css({left:e.pageX, top:e.pageY});
+              $("#image").css({left:e.pageX - 10, top:e.pageY - 10});
             }
           });
           if(frames % 20 == 0){
@@ -394,13 +395,13 @@
           pipes.forEach(function(a){
             pipes.pop(a);
           });
-          bird.setAttr(w/2+13, h - h/4, 3)
+          bird.setAttr(w/2+13, h - h/4, 1);
           // draw background, no trails
           ctx.fillStyle = "white";
           ctx.fillRect(w/2, h/2, w/2, h/2);
           ctx.strokeStyle = "black";
           ctx.strokeRect(w/2, h/2, w/2, h/2);
-          bird
+          bird //what is this?
         }
 
         function makeNewPipe(){
