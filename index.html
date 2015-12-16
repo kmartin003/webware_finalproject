@@ -6,6 +6,24 @@
     <canvas id="canvas" width="500" height="500"></canvas>
     <img id="image" src="astPlayer.png"/>
     <img id="startButton" src="start.png"/>
+    <h1 id='score'></h1>
+    <p> Please enter a username to add your score to the leaderboard: </p>
+    <form>
+      <input type = 'text'>
+      <input type = 'submit' onclick='highScore();'>
+    </form>
+    <list id='topScores'>
+      <li id = 'score1'> 0 </li>
+      <li id = 'score2'> 0 </li>
+      <li id = 'score3'> 0 </li>
+      <li id = 'score4'> 0 </li>
+      <li id = 'score5'> 0 </li>
+      <li id = 'score6'> 0 </li>
+      <li id = 'score7'> 0 </li>
+      <li id = 'score8'> 0 </li>
+      <li id = 'score9'> 0 </li>
+      <li id = 'score10'> 0 </li>
+    </list>
     <style>
       #image{
         position:absolute;
@@ -23,6 +41,56 @@
     </style>
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
     <script>
+      highscores = [0,0,0,0,0,0,0,0,0,0];
+
+      function highScore(newScore){
+        var i;
+        for(i = 0; i < highscores.length; i++){
+          if(highscores[i] < newScore){
+            highscores[i] = newScore;
+            return;
+          }
+        }
+      }
+
+      function drawScores(){
+        for(i = 0; i < highscores.length; i++){
+          switch(i){
+            case 0:
+              document.getElementById('score1').innerHTML = highscores[0];
+              break;
+            case 1:
+              document.getElementById('score2').innerHTML = highscores[1];
+              break;
+            case 2:
+              document.getElementById('score3').innerHTML = highscores[2];
+              break;
+            case 3:
+              document.getElementById('score4').innerHTML = highscores[3];
+              break;
+            case 4:
+              document.getElementById('score5').innerHTML = highscores[4];
+              break;
+            case 5:
+              document.getElementById('score6').innerHTML = highscores[5];
+              break;
+            case 6:
+              document.getElementById('score7').innerHTML = highscores[6];
+              break;
+            case 7:
+              document.getElementById('score8').innerHTML = highscores[7];
+              break;
+            case 8:
+              document.getElementById('score9').innerHTML = highscores[8];
+              break;
+            case 9:
+              document.getElementById('score10').innerHTML = highscores[9];
+              break;
+          }
+        }
+      }
+
+
       //
       // flappy classes
       var Bird = function(x,y,velY){
@@ -108,22 +176,28 @@
         var ctx = canvas.getContext("2d");
         var game_loop;
         //snake variables
-      	//Lets save the cell width in a variable for easy control
       	var cw = 10;
       	var d;
       	var food;
       	var score;
         var snakeW = w/2;
         var snakeH = h/2;
-      	//Lets create the snake now
-      	var snake_array; //an array of cells to make up the snake
+      	var snake_array; //array of cells to make up snake
 
         //asteroid variables
         var astPlayer = document.getElementById("image");
         astPlayer.style.left = w/4 +"px";
         astPlayer.style.top = 3*h/4 +"px";
 
+        var countdown = -1;
+
         function menu(){
+          // making sure not to get back mouse clicks
+          countdown = -1;
+          highScore(frames);
+          var scoretext = "Score: " + frames.toString();
+          document.getElementById("score").innerHTML = scoretext;
+          drawScores();
           clearInterval(game_loop);
           ctx.clearRect(-1,-1,w+1,h+1);
 
@@ -145,131 +219,137 @@
         }
         menu();
 
-      	function init()
-      	{
+      	function init(){
+          frames = 1;
+          // initialize all the games
           ctx.clearRect(0,0,w,h);
           snakeInit();
           rhythmInit();
           asteroidInit();
           flappyInit();
-
-      		//Lets move the snake now using a timer which will trigger the paint function
-      		//every 60ms
+          // set our game loop
       		if(typeof game_loop != "undefined") clearInterval(game_loop);
       		game_loop = setInterval(paint, 80);
       	}
 
       	function paint()
       	{
+          // increase frames every tick
           frames++;
+          // paint all of our games
       		snakePaint();
           rhythmPaint();
           asteroidPaint();
           flappyPaint();
       	}
 
+        //
+        // SNAKE
+        //
         function snakeInit(){
-          d = "right"; //default direction
+          // direction
+          d = "right";
+          // set up snake and piece of food
       		create_snake();
-      		create_food(); //Now we can see the food particle
-      		//finally lets display the score
+      		create_food();
       		score = 0;
         }
 
-        //Lets paint the snake now
         function snakePaint(){
-          //To avoid the snake trail we need to paint the BG on every frame
-      		//Lets paint the canvas now
+          // paint bg every frame to erase trail
       		ctx.fillStyle = "white";
       		ctx.fillRect(0, 0, w/2, h/2);
       		ctx.strokeStyle = "black";
       		ctx.strokeRect(0, 0, w/2, h/2);
-
-      		//The movement code for the snake to come here.
-      		//The logic is simple
-      		//Pop out the tail cell and place it infront of the head cell
+          // get position of head of snake
       		var nx = snake_array[0].x;
       		var ny = snake_array[0].y;
-      		//These were the position of the head cell.
-      		//We will increment it to get the new head position
-      		//Lets add proper direction based movement now
+      		// change where next position will be based on direction
       		if(d == "right") nx++;
       		else if(d == "left") nx--;
       		else if(d == "up") ny--;
       		else if(d == "down") ny++;
-
-      		//Lets add the game over clauses now
-      		//This will restart the game if the snake hits the wall
-      		//Lets add the code for body collision
-      		//Now if the head of the snake bumps into its body, the game will restart
-      		if(nx == -1 || nx == snakeW/cw || ny == -1 || ny == snakeH/cw || check_collision(nx, ny, snake_array))
-      		{
+          // restarts if wall hit or self hit
+      		if(nx == -1 || nx == snakeW/cw || ny == -1 || ny == snakeH/cw ||
+             check_collision(nx, ny, snake_array)){
       			//restart game
       			menu();
-      			//Lets organize the code a bit now.
       			return;
       		}
-
-      		//Lets write the code to make the snake eat the food
-      		//The logic is simple
-      		//If the new head position matches with that of the food,
-      		//Create a new head instead of moving the tail
-      		if(nx == food.x && ny == food.y)
-      		{
+      		// if overlaps with food
+      		if(nx == food.x && ny == food.y)	{
+            // shift everything
       			var tail = {x: nx, y: ny};
       			score++;
       			//Create new food
       			create_food();
       		}
-      		else
-      		{
-      			var tail = snake_array.pop(); //pops out the last cell
+      		else{
+            // just move him regularly
+      			var tail = snake_array.pop();
       			tail.x = nx; tail.y = ny;
       		}
-      		//The snake can now eat the food.
-
-      		snake_array.unshift(tail); //puts back the tail as the first cell
-
-      		for(var i = 0; i < snake_array.length; i++)
-      		{
+          //puts the tail as the first cell
+      		snake_array.unshift(tail);
+          // draw the snake
+      		for(var i = 0; i < snake_array.length; i++){
       			var c = snake_array[i];
-      			//Lets paint 10px wide cells
       			paint_cell(c.x, c.y);
       		}
-
-      		//Lets paint the food
+      		// draw the food
       		paint_cell(food.x, food.y);
-      		//Lets paint the score
-      		//var score_text = "Score: " + score;
-      		//ctx.fillText(score_text, 5, snakeH-5);
         }
 
-        function create_snake()
-      	{
-      		var length = 5; //Length of the snake
-      		snake_array = []; //Empty array to start with
-      		for(var i = length-1; i>=0; i--)
-      		{
-      			//This will create a horizontal snake starting from the top left
+        // helper to create snake at beginning
+        function create_snake(){
+      		var length = 5;
+      		snake_array = [];
+          // creates snake in array
+      		for(var i = length-1; i>=0; i--){
       			snake_array.push({x: i, y:0});
       		}
       	}
-
-      	//Lets create the food now
-      	function create_food()
-      	{
-      		food = {
-      			x: Math.round(Math.random()*(snakeW-cw)/cw),
-      			y: Math.round(Math.random()*(snakeH-cw)/cw),
+      	// helper to create food at random spot in canvas
+      	function create_food(){
+      		food = {x: Math.round(Math.random()*(snakeW-cw)/cw),
+      			      y: Math.round(Math.random()*(snakeH-cw)/cw),
       		};
-      		//This will create a cell with x/y between 0-44
-      		//Because there are 45(450/10) positions accross the rows and columns
       	}
-        var countdown = 0;
-
-        function rhythmInit(){
-          countdown = 0;
+        // helper to caint coordinates
+        function paint_cell(x, y){
+          ctx.fillStyle = "blue";
+          ctx.fillRect(x*cw, y*cw, cw, cw);
+          ctx.strokeStyle = "white";
+          ctx.strokeRect(x*cw, y*cw, cw, cw);
         }
+        // helper for checking snake collision
+        function check_collision(x, y, array){
+          for(var i = 0; i < array.length; i++){
+            if(array[i].x == x && array[i].y == y)
+             return true;
+          }
+          return false;
+        }
+
+        //
+        // RHYTHM
+        //
+
+        var time = 30; // how long to count down
+        function rhythmInit(){
+          countdown = -5;
+        }
+
+        $(document).mousedown(function(e){
+          if(countdown == -5){
+            console.log('mouse press bad?')
+            countdown = -1;
+            menu();
+            return;
+          }else if(countdown > 0){
+            countdown = -5;
+          }
+        });
 
         function rhythmPaint(){
           //To avoid the snake trail we need to paint the BG on every frame
@@ -279,53 +359,60 @@
       		ctx.strokeStyle = "black";
       		ctx.strokeRect(w/2, 0, w/2, h/2);
 
+          // If time to start counting down
           if(frames % 100 == 0){
-            countdown = 50;
-            counting = true;
+            countdown = time;
           }
+
+          // temp var for holding to string
           var words;
-          if(countdown <= 100 && countdown >= 0){
+          // if counting down
+          if(countdown <= time && countdown > 0){
+            // decrement timer and print
             countdown--;
             ctx.fillStyle = "red";
             ctx.font="140px Georgia";
             words = countdown.toString();
             ctx.fillText(words, w/2+55, h/2-100)
           }
-          if(countdown == -5)
+          // Game over if the time is up
+          if(countdown == 0){
+            countdown = -1;
             menu();
-
-          $(document).mousedown(function(e){
-            if(countdown >= 0){
-              countdown = 0;
-            }else{
-              menu();
-              return;
-            }
-          });
+            return;
+          }
 
         }
 
+        //
+        // ASTEROIDS
+        //
+        // Variables for the asteroids frame
         var asteroidX_min = 0;
         var asteroidX_max = w/2;
         var asteroidY_min = h/2;
         var asteroidY_max = h;
 
+        // Initializes the game
         function asteroidInit(){
+          // Empty array of asteroids
           asteroids.forEach(function(a){
             asteroids.pop(a);
           });
 
+          // Set location of player
           astPlayer.style.display = "inline";
-
           astPlayer.style.left = w/4 +"px";
           astPlayer.style.top = 3*h/4 +"px";
         }
 
+        // Helper function to make an asteroid in "random" place
         function makeNewAsteroid(){
           var spawnLocation = Math.floor(Math.random() * 3); // random number 0 - 3
           var random_x;
           var random_y;
           var new_asteroid;
+          // depending on first random num, choose where to spawn and do so
           switch(spawnLocation){
             case 0: // top
               random_x = Math.floor(Math.random() * asteroidX_max);
@@ -350,6 +437,7 @@
             }
         }
 
+        // Asteroid game loop
         function asteroidPaint(){
           // Paint bg evertime to cover trail
       		ctx.fillStyle = "white";
@@ -357,29 +445,31 @@
       		ctx.strokeStyle = "black";
       		ctx.strokeRect(0, h/2, w/2, h/2);
 
+          // If mouse is moved in canvas, move player image
           $(document).mousemove(function(e){
             if((e.pageX > 0) && (e.pageX < w/2) && (e.pageY > h/2) && (e.pageY < h)){
               $("#image").css({left:e.pageX - 10, top:e.pageY - 10});
             }
           });
+          // Make asteroids on a 20 second delay
           if(frames % 20 == 0){
             makeNewAsteroid();
           }
+          // Go through and test asteroids for collison and then draw
           asteroids.forEach(function(a){
+            // variables for testing collision
             var left = parseInt(astPlayer.style.left, 10);
             var top = parseInt(astPlayer.style.top, 10);
             var width = 20;
             var height = 20;
-
             //collision
-            if(((left + width < a.x) || (a.x + a.size < left) || (top + height < a.y) || (a.y+a.size < top))){
-
-            }
+            if(((left + width < a.x) || (a.x + a.size < left) || (top + height < a.y) || (a.y+a.size < top))){}
             else{
               menu();
               return;
             }
 
+            // If asteroid is in bounds, draw it
             if(a.updateCoord(asteroidX_max, asteroidX_min, asteroidY_max, asteroidY_min)){
               ctx.fillStyle = "blue";
           		ctx.fillRect(a.x, a.y, a.size, a.size);
@@ -388,8 +478,11 @@
             }
           });
         }
+        //
+        // FLAPPY BIRD
+        //
 
-        var flopping = 0;
+        // Switch for spawning
         var ontop = true;
         function flappyInit(){
           pipes.forEach(function(a){
@@ -466,41 +559,15 @@
           bird.fall(1);
         }
 
-
-
-      	//Lets first create a generic function to paint cells
-      	function paint_cell(x, y)
-      	{
-      		ctx.fillStyle = "blue";
-      		ctx.fillRect(x*cw, y*cw, cw, cw);
-      		ctx.strokeStyle = "white";
-      		ctx.strokeRect(x*cw, y*cw, cw, cw);
-      	}
-
-      	function check_collision(x, y, array)
-      	{
-      		//This function will check if the provided x/y coordinates exist
-      		//in an array of cells or not
-      		for(var i = 0; i < array.length; i++)
-      		{
-      			if(array[i].x == x && array[i].y == y)
-      			 return true;
-      		}
-      		return false;
-      	}
-
-      	//Lets add the keyboard controls now
       	$(document).keydown(function(e){
       		var key = e.which;
-      		//We will add another clause to prevent reverse gear
       		if(key == "65" && d != "right") d = "left";
       		else if(key == "87" && d != "down") d = "up";
       		else if(key == "68" && d != "left") d = "right";
       		else if(key == "83" && d != "up") d = "down";
           else if((key == "32") || key == "67"){
-            bird.flop(8);
+            bird.flop(6);
           }
-      		//The snake is now keyboard controllable
       	});
       });
     </script>
