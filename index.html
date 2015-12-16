@@ -5,13 +5,21 @@
   <body>
     <canvas id="canvas" width="500" height="500"></canvas>
     <img id="image" src="http://www.clipartlord.com/wp-content/uploads/2015/07/rocketship19.png"/>
-
+    <img id="startButton" src="start.png"/>
     <style>
       #image{
         position:absolute;
         height:20px;
         width:20px;
+        display: none;
       }
+      #startButton{
+        position:absolute;
+        height:50;
+        width:200
+        display: none;
+      }
+
     </style>
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
     <script>
@@ -46,7 +54,7 @@
       	var h = $("#canvas").height();
 
         var ctx = canvas.getContext("2d");
-
+        var game_loop;
         //snake variables
       	//Lets save the cell width in a variable for easy control
       	var cw = 10;
@@ -63,9 +71,32 @@
         astPlayer.style.left = w/4 +"px";
         astPlayer.style.top = 3*h/4 +"px";
 
+        function menu(){
+          clearInterval(game_loop);
+          ctx.clearRect(-1,-1,w+1,h+1);
+          console.log('should clear');
+
+          ctx.fillStyle = "white";
+      		ctx.fillRect(0, 0, w, h);
+      		ctx.strokeStyle = "black";
+      		ctx.strokeRect(0, 0, w, h);
+
+          var startButton = document.getElementById("startButton");
+          startButton.style.left = '185px';
+          startButton.style.top = '232px';
+          startButton.style.display = 'inline';
+
+          startButton.onclick=function(){
+            startButton.style.display = 'none';
+            init();
+          };
+
+        }
+        menu();
 
       	function init()
       	{
+          ctx.clearRect(0,0,w,h);
           snakeInit();
           rhythmInit();
           asteroidInit();
@@ -76,7 +107,7 @@
       		if(typeof game_loop != "undefined") clearInterval(game_loop);
       		game_loop = setInterval(paint, 60);
       	}
-      	init();
+      	//init();
 
       	function paint()
       	{
@@ -124,7 +155,7 @@
       		if(nx == -1 || nx == snakeW/cw || ny == -1 || ny == snakeH/cw || check_collision(nx, ny, snake_array))
       		{
       			//restart game
-      			init();
+      			menu();
       			//Lets organize the code a bit now.
       			return;
       		}
@@ -208,6 +239,8 @@
             asteroids.pop(a);
           });
 
+          astPlayer.style.display = "inline";
+
           astPlayer.style.left = w/4 +"px";
           astPlayer.style.top = 3*h/4 +"px";
         }
@@ -268,7 +301,7 @@
 
             }
             else{
-              init();
+              menu();
               return;
             }
 
