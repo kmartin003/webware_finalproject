@@ -15,6 +15,35 @@
     </style>
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
     <script>
+      //
+      // flappy classes
+      var Bird = function(x,y,velY){
+        this.x = x;
+        this.y = y;
+        this.velY = velY;
+      }
+      Bird.prototype.update = function(){
+          this.y = this.y + this.velY;
+      }
+      Bird.prototype.flop = function(amount){
+        this.velY -= amount;
+      }
+      Bird.prototype.fall = function(amount){
+        this.velY += amount;
+      }
+
+      var Pipe = function(x,y,height){
+        this.x = x;
+        this.y = y;
+        this.height = height;
+      }
+      Pipe.prototype.update = function(){
+        this.x--;
+        return true;
+      }
+
+      //
+      // asteroid classes
       var Asteroid = function(x,y,velX,velY,size){
             this.x = x;
             this.y = y;
@@ -35,10 +64,13 @@
         return [this.x,this.y];
       }
 
+      // array of asteroids (TODO: move inside document.ready?)
       var asteroids = [];
-
+      // how long we've been running
       var frames = 0;
 
+      //
+      // begin game
       $(document).ready(function(){
       	//Canvas stuff
       	var canvas = $("#canvas")[0];
@@ -233,7 +265,6 @@
               asteroids.push(new_asteroid);
               break;
             }
-
         }
 
         function asteroidPaint(){
@@ -262,18 +293,62 @@
           });
         }
 
+        var bird = new Bird(w/2 + 3, h - h/4 , 3);
+        var flopping = 0;
+        var pipes = [];
+        var ontop = true;
         function flappyInit(){
 
         }
 
+        function makeNewPipe(){
+          var height = Math.floor((Math.random() * 70) + 100);
+          var new_pipe;
+          if(ontop){
+              ontop = false;
+              new_pipe = new Pipe(w,h/2, height);
+              pipes.push(new_pipe);
+          }else{
+              ontop = true;
+              new_pipe = new Pipe(w,h-height, height);
+              pipes.push(new_pipe);
+          }
+        }
+
+        function paintBird(bird){
+          ctx.fillStyle = "red";
+      		ctx.fillRect(bird.x, bird.y, 15, 15);
+      		ctx.strokeStyle = "red";
+      		ctx.strokeRect(bird.x, bird.y, 15, 15);
+        }
+
         function flappyPaint(){
-          //To avoid the snake trail we need to paint the BG on every frame
-      		//Lets paint the canvas now
-      		ctx.fillStyle = "white";
+          // draw background, no trails
+      	   ctx.fillStyle = "white";
       		ctx.fillRect(w/2, h/2, w/2, h/2);
       		ctx.strokeStyle = "black";
       		ctx.strokeRect(w/2, h/2, w/2, h/2);
+
+          if(frames % 100 == 0) {
+            makeNewPipe();
+          }
+
+          pipes.forEach(function(p){
+            if(p.update()){
+              ctx.fillStyle = "blue";
+          		ctx.fillRect(p.x, p.y, 10, p.height);
+          		ctx.strokeStyle = "blue";
+          		ctx.strokeRect(p.x, p.y, 10, p.height);
+            }
+          });
+
+          // want to paint our "bird"
+          paintBird(bird);
+          bird.update();
+          bird.fall(1);
         }
+
+
 
       	//Lets first create a generic function to paint cells
       	function paint_cell(x, y)
@@ -304,6 +379,9 @@
       		else if(key == "87" && d != "down") d = "up";
       		else if(key == "68" && d != "left") d = "right";
       		else if(key == "83" && d != "up") d = "down";
+          else if((key == "32") || key == "67"){
+            bird.flop(8);
+          }
       		//The snake is now keyboard controllable
       	});
       });
