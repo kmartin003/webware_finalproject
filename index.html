@@ -35,8 +35,16 @@
       #startButton{
         position:absolute;
         height:50;
-        width:200
+        width:200;
         display: none;
+      }
+
+      #canvas{
+        padding-left: 0;
+        padding-right: 0;
+        margin-left: auto;
+        margin-right: auto;
+        display:block;
       }
 
     </style>
@@ -230,6 +238,13 @@
       	var canvas = $("#canvas")[0];
       	var w = $("#canvas").width();
       	var h = $("#canvas").height();
+        var bodyRect = document.body.getBoundingClientRect();
+        var elemRect = document.getElementById('canvas').getBoundingClientRect();
+        var offsety = elemRect.top - bodyRect.top;
+        var offsetx = elemRect.left - bodyRect.left;
+
+        console.log(offsetx);
+        console.log(offsety);
 
         var ctx = canvas.getContext("2d");
         var game_loop;
@@ -265,8 +280,8 @@
       		ctx.strokeRect(0, 0, w, h);
 
           var startButton = document.getElementById("startButton");
-          startButton.style.left = '185px';
-          startButton.style.top = '232px';
+          startButton.style.left = offsetx + 162 + "px";
+          startButton.style.top = offsety + 232 + "px";
           startButton.style.display = 'inline';
 
           startButton.onclick=function(){
@@ -460,8 +475,8 @@
 
           // Set location of player
           astPlayer.style.display = "inline";
-          astPlayer.style.left = w/4 +"px";
-          astPlayer.style.top = 3*h/4 +"px";
+          astPlayer.style.left = offsetx + w/4 +"px";
+          astPlayer.style.top = offsety + 3*h/4 +"px";
         }
 
         // Helper function to make an asteroid in "random" place
@@ -505,8 +520,23 @@
 
           // If mouse is moved in canvas, move player image
           $(document).mousemove(function(e){
-            if((e.pageX > 0) && (e.pageX < w/2) && (e.pageY > h/2) && (e.pageY < h)){
-              $("#image").css({left:e.pageX - 10, top:e.pageY - 10});
+            if(e.pageX < offsetx + 9) {
+              $("#image").css({left:offsetx + 9});
+            }
+            else if(e.pageX > offsetx + w/2 - 12){
+              $("#image").css({left:offsetx + w/2 - 12});
+            }
+            else{
+              $("#image").css({left:e.pageX});
+            }
+            if(e.pageY < offsety + h/2 + 9){
+              $("#image").css({top:offsety + h/2 + 9});
+            }
+            else if(e.pageY > offsety + h - 12){
+              $("#image").css({top:offsety + h - 12});
+            }
+            else {
+              $("#image").css({top:e.pageY});
             }
           });
           // Make asteroids on a 20 second delay
