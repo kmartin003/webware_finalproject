@@ -47,7 +47,7 @@
       }
 
     </style>
-    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js" type="text/javascript"></script>
     <script>
       var thisuser;
       var highscores = ['','','','','','','','','','',''];
@@ -75,6 +75,24 @@
         box.innerHTML = result;
       }
 
+      function sendScores(score, user){
+        console.log("got here");
+        var reqInsert = new XMLHttpRequest();
+
+        reqInsert.onreadystatechange = function(){
+          handleRes(reqInsert);
+        }
+
+        reqInsert.open('POST', '/login');
+        reqInsert.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+
+        var sentItem = "user=" + user + "&score=" + score;
+        reqInsert.send(sentItem);
+      }
+
+      function handleRes(req){
+        console.log(req.responseText);
+      }
 
       function highScore(newScore){
         var i;
@@ -85,9 +103,11 @@
             if(thisuser){
               tempname = highusers[i];
               highusers[i] = thisuser + ' - ';
+              sendScores(newScore, highusers[i]);
             }else{
               tempname = highusers[i];
               highusers[i] = '';
+              sendScores(newScore, highusers[i]);
             }
             // if one matches
             temp = highscores[i];
@@ -233,16 +253,6 @@
       //
       // begin game
       $(document).ready(function(){
-        var user;
-        $("#submit").click(function(){
-          user=$("#user").val();
-          $.post("http://localhost:3000/login", {user: user}, function(data){
-            if(data==='done'){
-              console.log('login worked');
-              alert('login worked');
-            }
-          })
-        })
 
       	//Canvas stuff
       	var canvas = $("#canvas")[0];
