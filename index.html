@@ -198,8 +198,8 @@
 
         //asteroid variables
         var astPlayer = document.getElementById("image");
-        astPlayer.style.left = w/4 +"px";
-        astPlayer.style.top = 3*h/4 +"px";
+        astPlayer.style.left = offsetx + w/4 +"px";
+        astPlayer.style.top = offsety + 3*h/4 +"px";
 
         var countdown = -1;
 
@@ -405,10 +405,10 @@
         // ASTEROIDS
         //
         // Variables for the asteroids frame
-        var asteroidX_min = 0;
-        var asteroidX_max = w/2;
-        var asteroidY_min = h/2;
-        var asteroidY_max = h;
+        var asteroidX_min = offsetx;
+        var asteroidX_max = offsetx + w/2;
+        var asteroidY_min = offsety + h/2;
+        var asteroidY_max = offsety + h;
 
         // Initializes the game
         function asteroidInit(){
@@ -495,6 +495,14 @@
             //collision
             if((left + width < a.x) || (a.x + a.size < left) || (top + height < a.y) || (a.y+a.size < top)){
               console.log("no collision");
+              console.log(left + width);
+              console.log(a.x);
+              console.log(a.x + a.size);
+              console.log(left);
+              console.log(top + height);
+              console.log(a.y);
+              console.log(a.y + a.size);
+              console.log(top);
             }
             else{
               console.log("collision");
