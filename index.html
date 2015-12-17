@@ -3,6 +3,14 @@
       <title>Webware Final Project</title>
   </head>
   <body>
+    <h3>
+      In our game you will be playing four games at once:<br>
+        - Snake - avoid hitting walls while collecting the red food<br>
+        - Countdown - click the left mouse button before the time runs out<br>
+        - Asteroids - move your mouse to avoid the asteroids<br>
+        - Flappy Bird - use 'C' or space bar to bounce your bird<br>
+      Instructions: Go for the highest time! Each game gives you bonus points for completing it
+    <h3>
     <canvas id="canvas" width="500" height="500"></canvas>
     <img id="image" src="astPlayer.png"/>
     <img id="startButton" src="start.png"/>
@@ -11,7 +19,6 @@
     <form>
       <input type = 'text' id = 'user'>
       <input type = 'button' value='Set username' onclick='setNameCookie();'>
-      <input type = 'button' value='Display username' onclick="displayCookie('uname');">
     </form>
     <ol id='topScores'>
       <li id = 'score1'> 0 </li>
@@ -26,6 +33,10 @@
       <li id = 'score10'> 0 </li>
     </ol>
     <style>
+      body{
+        background-color: #707070;
+      }
+
       #image{
         position:absolute;
         height:20px;
@@ -62,20 +73,6 @@
         document.cookie = 'uname'+'='+name;
         thisuser = name;
       }
-
-      function displayCookie(cname){
-        var name = cname + "=";
-        var ca = document.cookie.split(';');
-        var result = '';
-        for(var i=0; i<ca.length; i++) {
-            var c = ca[i];
-            while (c.charAt(0)==' ') c = c.substring(1);
-            if (c.indexOf(name) == 0) result = c.substring(name.length, c.length);
-        }
-        var box = document.getElementById('score');
-        box.innerHTML = result;
-      }
-
 
       function highScore(newScore){
         var i;
