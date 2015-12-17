@@ -9,8 +9,8 @@
     <h1 id='score'></h1>
     <p> Please enter a username to add your score to the leaderboard: </p>
     <form>
-      <input type = 'text'>
-      <input type = 'submit' onclick='highScore();'>
+      <input type = 'text' id='user'>
+      <input type = 'button' id='submit' value='Submit' onclick='highScore();'>
     </form>
     <list id='topScores'>
       <li id = 'score1'> 0 </li>
@@ -168,6 +168,17 @@
       //
       // begin game
       $(document).ready(function(){
+        var user;
+        $("#submit").click(function(){
+          user=$("#user").val();
+          $.post("http://localhost:3000/login", {user: user}, function(data){
+            if(data==='done'){
+              console.log('login worked');
+              alert('login worked');
+            }
+          })
+        })
+
       	//Canvas stuff
       	var canvas = $("#canvas")[0];
       	var w = $("#canvas").width();
