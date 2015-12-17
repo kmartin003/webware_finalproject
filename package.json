@@ -1,8 +1,8 @@
 {
-  "name": "GFP-4241-node",
+  "name": "final",
   "version": "0.0.1",
   "description": "WPI CS 4241 assignment",
-  "author": "Hoang Ngo",
+  "author": "Jay Baia",
   "private": true,
   "scripts": {
     "start": "node server.js"
