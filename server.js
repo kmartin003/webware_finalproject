@@ -1,28 +1,61 @@
-var express = require('express');
-var bodyParser = require("body-parser");
-var path = require('path');
+var http = require('http')
+  , fs = require('fs')
+  , url = require('url')
+  , path = require('path')
 
-var app = express();
-var port = process.env.PORT || 3000;
+// Goal: get this to client
+var classes = ['cs573', 'cs4241']
 
-app.use(express.static(path.join(__dirname, '/')));
-app.use('/', function(req, res) {
-  res.sendFile(path.join(__dirname, '/index.html'));
+var server = http.createServer (function (req, res) {
+  var uri = url.parse(req.url);
+
+  switch( uri.pathname ) {
+    case '/':
+      sendFile(res, 'index.html');
+      break;
+    case '/index.html':
+      sendFile(res, 'index.html');
+      break;
+    case '/add':
+      handleResBody(req);
+      res.end('testing return');
+      break;
+    case '/list':
+      res.end( JSON.stringify(classes) );
+      break;
+    default:
+      res.end('404 not found');
+  }
 });
-app.use(bodyParser.urlencoded({ extended: true }));
 
-app.get('/',function(req,res){
-  res.sendfile("index.html");
-});
+function handleResBody(req) {
+ var chunk = ""
+ req.on('data', function(data) {
+   chunk += data;
+ })
+ req.on('end', function(data) {
+   // Note: this is not a great way to access this object.
+   var obj = chunk.split('=');
+   classes.push( obj[1] );
+ })
+}
 
-app.post('/login',function(req,res){
-  var user_name=req.body.user;
-  var score=req.body.score;
-  console.log("User name = "+user_name);
-  res.send = 'sdasdas';
-  res.end("done");
-});
+server.listen(8080);
+console.log('listening on 8080');
 
-app.listen(port, function() {
-  console.log('App is listening on port ' + port);
-});
+// subroutines
+
+function sendFile(res, filename) {
+  res.writeHead(200, {'Content-type': 'text/html'})
+
+  var stream = fs.createReadStream(filename)
+
+  stream.on('data', function(data) {
+    res.write(data);
+  })
+
+  stream.on('end', function(data) {
+    res.end();
+    return;
+  })
+}

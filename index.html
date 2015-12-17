@@ -91,7 +91,12 @@
       }
 
       function handleRes(req){
-        console.log(req.responseText);
+        if( req.readyState !== XMLHttpRequest.DONE )
+          return;
+
+        if(req.status === 200){
+          redirect(JSON.parse(req.responseText));
+        }
       }
 
       function highScore(newScore){
