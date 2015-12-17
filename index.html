@@ -116,7 +116,7 @@
       }
       Bird.prototype.flop = function(amount){
         this.velY -= amount;
-        if(this.velY < 7) this.velY = -7;
+        if(this.velY < -7) this.velY = -7;
       }
       Bird.prototype.fall = function(amount){
         this.velY += amount;
@@ -185,9 +185,6 @@
         var offsety = elemRect.top - bodyRect.top;
         var offsetx = elemRect.left - bodyRect.left;
 
-        console.log(offsetx);
-        console.log(offsety);
-
         var ctx = canvas.getContext("2d");
         var game_loop;
         //snake variables
@@ -209,12 +206,17 @@
         function menu(){
           // making sure not to get back mouse clicks
           countdown = -1;
+
           highScore(frames);
           var scoretext = "Score: " + frames.toString();
           document.getElementById("score").innerHTML = scoretext;
           drawScores();
+
+          //clear everything
           clearInterval(game_loop);
+          asteroids = [];
           ctx.clearRect(-1,-1,w+1,h+1);
+          astPlayer.style.display = 'none';
 
           ctx.fillStyle = "white";
       		ctx.fillRect(0, 0, w, h);
@@ -332,7 +334,7 @@
       	}
         // helper to caint coordinates
         function paint_cell(x, y){
-          ctx.fillStyle = "blue";
+          ctx.fillStyle = "red";
           ctx.fillRect(x*cw, y*cw, cw, cw);
           ctx.strokeStyle = "white";
           ctx.strokeRect(x*cw, y*cw, cw, cw);
@@ -411,9 +413,7 @@
         // Initializes the game
         function asteroidInit(){
           // Empty array of asteroids
-          asteroids.forEach(function(a){
-            asteroids.pop(a);
-          });
+          asteroids = [];
 
           // Set location of player
           astPlayer.style.display = "inline";
@@ -493,8 +493,11 @@
             var width = 20;
             var height = 20;
             //collision
-            if(((left + width < a.x) || (a.x + a.size < left) || (top + height < a.y) || (a.y+a.size < top))){}
+            if((left + width < a.x) || (a.x + a.size < left) || (top + height < a.y) || (a.y+a.size < top)){
+              console.log("no collision");
+            }
             else{
+              console.log("collision");
               menu();
               return;
             }
@@ -515,9 +518,7 @@
         // Switch for spawning
         var ontop = true;
         function flappyInit(){
-          pipes.forEach(function(a){
-            pipes.pop(a);
-          });
+          pipes = [];
           bird.setAttr(w/2+13, h - h/4, 1);
           // draw background, no trails
           ctx.fillStyle = "white";
